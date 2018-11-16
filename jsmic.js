@@ -248,10 +248,16 @@
     };
     m.record = function(autostart)
     {
+      if(m.recording)
+      {
+        if(autostart && !m.listening)
+        {
+          m.start();
+        }
+        return;
+      }
       // save recorded buffers
       m.recording = true;
-      m.buffers = [];
-      m.buflen = 0;
       
       if(autostart)
       {
