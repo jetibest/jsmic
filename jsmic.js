@@ -208,6 +208,8 @@
     {
       m.listening = false;
       m.recording = false;
+      _m.buffers = [];
+      _m.buflen = 0;
       statuschanged();
     };
     m.hassupport = function()
@@ -239,9 +241,6 @@
     };
     m.clear = function()
     {
-      // clear all buffers
-      _m.buffers = [];
-      _m.buflen = 0;
       m.buffer = [];
       m.bufferbytes = 0;
       m.buffers = [];
@@ -317,6 +316,10 @@
     {
       return base64(m.wavfile(), header, cb);
     };
+    m.base64wavchunk = function(header, cb)
+    {
+      return base64(m.wavchunk(), header, cb);
+    };
     m.wavfile = function()
     {
       return m.wavchunk({header: true});
@@ -326,6 +329,13 @@
       // export recorded buffers to Base64 WAV format
 
       options = options || {};
+      
+      if(!m.bufferbytes)
+      {
+        // use tickbuffer when no recording is saved
+        m.buffer = _m.buffer;
+        m.bufferbytes = m.buffer.length * 2; // 16 bits is 2 bytes per element
+      }
 
       var nbytes = m.bufferbytes;
       var buf = m.buffer;
