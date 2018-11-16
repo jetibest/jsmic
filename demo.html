@@ -63,7 +63,8 @@
       };
       id('exportbutton').onclick = function()
       {
-        mic.save('test.wav');
+        mic.save();
+        mic.savefile('test.wav');
         mic.clear();
       };
       mic.ontick = function()
@@ -88,7 +89,7 @@
         
         id('fpsmeter').innerHTML = Math.round(dt/100)/10 + ' ticks per second';
         
-        id('recordmeter').innerHTML = Math.round(mic.bufferbytes / 1024) + 'KiB';
+        id('recordmeter').innerHTML = Math.round(mic.tickbuffer.length * 2 / 1024) + 'KiB';
       };
     };
     </script>
