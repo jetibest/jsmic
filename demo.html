@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+	<body>
+    <style type="text/css">
+		#volumemeter
+		{position: relative;width: 20px;height: 80px;overflow: hidden;background-color: #000;}
+		#volumemeterbar
+		{position: absolute;width: 100%;height: 0%;left: 0px;top: auto;bottom: 0px;background-color: #ff0;}
+		</style>
+		
+		<input type="button" value="Start recording" id="startbutton" />
+		<input type="button" value="Stop recording" id="stopbutton" />
+		<input type="button" value="Export as Base64 WAV" id="exportbutton" />
+		
+		<div id="feedback"></div>
+		<div id="status"></div>
+		<div id="error"></div>
+		
+		<div id="volumemeter"><span id="volumemeterbar"></span></div>
+		
+		<div id="fpsmeter"></div>
+		
+		<div id="recordmeter"></div>
+		
+    <script src="jsmic.js"></script>
+		<script>			
+		window.onload = function()
+		{
+			var id = function(id){return document.getElementById(id);};
+			
+			var mic = window.jsmic.create({
+				volume: 100,
+				tickms: 200
+			});
+			
+			var slowvol = 0;
+			var slowvoltimer = null;
+			
+			mic.onstatus = function()
+			{
+				id('status').innerHTML = 'status: supported=' + mic.supported + ', permitted=' + mic.permitted + ', listening=' + mic.listening + ', recording=' + mic.recording;
+			};
+			mic.onerror = function()
+			{
+				id('error').innerHTML = mic.error;
+			};
+			id('startbutton').onclick = function()
+			{
+				if(mic.haspermission())
+				{
+					id('feedback').innerHTML = 'Going to record...';
+					mic.record(true);
+				}
+				else
+				{
+					id('feedback').innerHTML = 'I want to listen to the microphone, please?';
+					mic.askpermission();
+				}
+			};
+			id('stopbutton').onclick = function()
+			{
+				mic.stop();
+			};
+			id('exportbutton').onclick = function()
+			{
+				mic.save('test.wav');
+				mic.clear();
+			};
+			mic.ontick = function()
+			{
+				// mic.buffer contains an array with all samples from last tick (mostly between -1 and 1)
+				
+				var dt = mic.tickms;
+				var dvol = mic.volume - slowvol;
+				if(dvol > 0)
+				{
+					slowvol += dvol;
+				}
+				else
+				{
+					slowvol += dvol * Math.min(1, 0.001 * dt);
+				}
+				if(!slowvoltimer)
+				{
+					id('volumemeterbar').style.height = Math.round(slowvol * 100) + '%';
+					slowvoltimer = setTimeout(function(){slowvoltimer = null;}, 200);
+				}
+				
+				id('fpsmeter').innerHTML = Math.round(dt/100)/10 + ' ticks per second';
+				
+				id('recordmeter').innerHTML = Math.round(mic.bufferbytes / 1024) + 'KiB';
+			};
+		};
+		</script>
+		
+	</body>
+</html>
