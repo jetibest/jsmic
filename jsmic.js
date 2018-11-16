@@ -133,7 +133,8 @@
       m.listening = true;
       statuschanged();
 
-      _m.context = new root.AudioContext();
+      _m.ac = root.AudioContext || root.webkitAudioContext;
+      _m.context = new _m.ac();
       _m.source = _m.context.createMediaStreamSource(_m.stream);
       _m.processor = _m.context.createScriptProcessor(m.buffersize, m.nchannels, 1);
 
