@@ -162,7 +162,7 @@
           error('no input channels');
           return;
         }
-        d = new Float32Array(_m.buffersize);
+        d = new Float32Array(m.buffersize);
 
         // mix all channels to mono
         for(i=0;i<nch;++i)
