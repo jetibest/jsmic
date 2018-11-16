@@ -64,7 +64,7 @@ Tested on Firefox and Chrome, but should work on any modern browser that support
       Clear the buffer used for recording.
     
     m.savefile(string filename)
-      Tell browser to give 'Save file'-dialog to download recording as WAV-file (as far as this is supported), might only work if the function call originated from a click-event by the user. The WAV-file will contain signed 16-bit Little-Endian PCM data (S16_LE).
+      Tell browser to give 'Save file'-dialog to download recording as an audio file (as far as this is supported), might only work if the function call originated from a click-event by the user. Only the .wav extension is currently supported. The WAV-file will contain signed 16-bit Little-Endian PCM data (S16_LE). Calls `m.wavfile()`.
     
     m.base64wavfile(boolean header)
       Get Base64-encoded WAV-data string (16-bit Little-Endian PCM; S16LE).
@@ -76,6 +76,7 @@ Tested on Firefox and Chrome, but should work on any modern browser that support
     m.wavchunk(options)
       Get raw signed 16-bit Little-Endian PCM data in a DataView container.
       If `options.header` is true, the WAV header is added - which contains information about the sample-rate, number of channels, number of bits per sample etc.
+      The data contains the buffer from the last tick, or if `m.save()` was called without `m.clear()`, it uses the recorded buffer.
 
 ## Properties
 
