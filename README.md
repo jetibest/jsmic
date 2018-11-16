@@ -11,32 +11,27 @@ Tested on Firefox and Chrome, but should work on any modern browser that support
     
     <script src="jsmic.js"></script>
     <script>
-    var mic = jsmic.create({volume: 100, tickms: 200});
+    var mic = jsmic.create({
+        volume: 100, // set volume to 100%
+        tickms: 200  // aggregate every 0.2s
+    });
     mic.onerror = function(err)
     {
-      alert('Microphone error: ' + err);
+        alert('Microphone error: ' + err);
     };
     mic.ontick = function()
     {
-      // `mic.tickbuffer` contains all samples in a Float32Array of last tick
-      // `mic.tickms` is the measured duration in milliseconds of last tick
-      document.getElementById('volumelabel').innerText = Math.round(mic.volume * 100) + '%';
+        // `mic.tickbuffer` contains all samples in a Float32Array of last tick
+        // `mic.tickms` is the measured duration in milliseconds of last tick
+        document.getElementById('volumelabel').innerText = Math.round(mic.volume * 100) + '%';
     };
-    
     function startmic()
     {
-      if(mic.haspermission())
-      {
-        mic.start();
-      }
-      else
-      {
-        mic.askpermission();
-      }
+        mic.start(true);
     }
     function stopmic()
     {
-      mic.stop();
+        mic.stop();
     }
     </script>
     
@@ -62,10 +57,13 @@ Tested on Firefox and Chrome, but should work on any modern browser that support
       Keep track of all samples in a single buffer, which is written to each tick.
       If autostart is true, this automatically calls `m.start()`.
     
+    m.save()
+      Save the recorded samples in a buffer (accessible through `m.buffer`).
+    
     m.clear()
       Clear the buffer used for recording.
     
-    m.save(string filename)
+    m.savefile(string filename)
       Tell browser to give 'Save file'-dialog to download recording as WAV-file (as far as this is supported), might only work if the function call originated from a click-event by the user. The WAV-file will contain signed 16-bit Little-Endian PCM data (S16_LE).
     
     m.base64wavfile(boolean header)
