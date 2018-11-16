@@ -99,7 +99,7 @@
     };
 
     // --- methods ---
-    m.start = function()
+    m.start = function(askpermission)
     {
       if(!m.supported)
       {
@@ -108,8 +108,11 @@
       }
       if(!m.permitted)
       {
-        error('permission denied');
-        return;
+        if(!askpermission)
+        {
+          error('permission denied');
+          return;
+        }
       }
       if(!_m.stream)
       {
@@ -146,6 +149,9 @@
       _m.buffers = [];
       _m.buflen = 0;
       _m.epochms = timeMS();
+      
+      m.buffers = [];
+      m.buflen = 0;
 
       var nch, d, i, n, epochms;
       _m.processor.onaudioprocess = function(e)
@@ -187,8 +193,8 @@
 
           if(m.recording)
           {
-            m.buffer = concatbuffers([m.buffer, m.tickbuffer], m.buffer.length + m.tickbuffer.length);
-            m.bufferbytes = 2 * m.buffer.length; // 16 bits is 2 bytes per element
+            m.buffers.push(m.tickbuffer);
+            m.buflen += m.tickbuffer.length;
           }
 
           if(typeof m.ontick === 'function')
@@ -238,22 +244,37 @@
       _m.buflen = 0;
       m.buffer = [];
       m.bufferbytes = 0;
+      m.buffers = [];
+      m.buflen = 0;
     };
     m.record = function(autostart)
     {
       // save recorded buffers
       m.recording = true;
-
-      if(autostart && !m.listening)
+      m.buffers = [];
+      m.buflen = 0;
+      
+      if(autostart)
       {
-        m.start();
+        if(!m.listening)
+        {
+          m.start();
+        }
       }
       else
       {
         statuschanged();
       }
     };
-    m.save = function(filename, extension, data)
+    m.save = function()
+    {
+      m.recording = false;
+      m.buffer = concatbuffers(m.buffers, m.buflen);
+      m.bufferbytes = 2 * m.buffer.length; // 16 bits is 2 bytes per element
+      m.buffers = [];
+      m.buflen = 0;
+    };
+    m.savefile = function(filename, extension, data)
     {
       filename = filename || 'jsmic-recording.wav';
       extension = extension || filename.replace(/^.*\.([a-zA-Z0-9]+)$/gi, function($0, $1)
