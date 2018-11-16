@@ -16,6 +16,8 @@
       recording: false,
       error: null,
       volume: 0,
+      nchannels: options.nchannels || 1,
+      buffersize: options.buffersize || 1024,
       buffer: [],
       bufferbytes: 0,
       audioformat: {
@@ -130,7 +132,7 @@
 
       _m.context = new root.AudioContext();
       _m.source = _m.context.createMediaStreamSource(_m.stream);
-      _m.processor = _m.context.createScriptProcessor(1024, 1, 1);
+      _m.processor = _m.context.createScriptProcessor(m.buffersize, m.nchannels, 1);
 
       _m.gain = _m.context.createGain();
       _m.source.connect(_m.gain);
@@ -160,10 +162,10 @@
           error('no input channels');
           return;
         }
-        d = e.inputBuffer.getChannelData(0);
+        d = new Float32Array(_m.buffersize);
 
         // mix all channels to mono
-        for(i=1;i<nch;++i)
+        for(i=0;i<nch;++i)
         {
           e.inputBuffer.copyFromChannel(d, i, 0); // copy all data from channel i to d starting from 0 offset
         }
