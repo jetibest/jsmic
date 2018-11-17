@@ -4,7 +4,7 @@ Simple javascript library to record raw data from microphone.
 ## Compatibility
 Tested on Firefox and Chrome, but should work on any modern browser that supports the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API), and more specifically the [BaseAudioContext](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext#Browser_compatibility).
 
-If you get `NotFoundError: The object can not be found here.`, access to the microphone is probably prohibited because of a non-HTTPS protocol as a security feature.
+If your browser is modern and compatible, and it still doesn't work at all. Then, either access to the microphone is not permitted because you should be using the HTTPS protocol (http:// and file:/// may not work depending on the browser), or another tab/window/application is already using the microphone.
 
 ## Usage
     <input type="button" value="Start" onclick="startmic();" />
